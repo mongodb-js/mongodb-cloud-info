@@ -1,0 +1,38 @@
+{
+  "name": "mongodb-cloud-info",
+  "version": "1.0.0",
+  "description": "Get cloud information based on hostname",
+  "main": "index.js",
+  "scripts": {
+    "check": "mongodb-js-precommit",
+    "test": "mocha test/index.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mongodb-js/mongodb-cloud-info.git"
+  },
+  "keywords": [
+    "cloudInfo",
+    "mongodb",
+    "mongodb.js"
+  ],
+  "author": "Alena Khineika <alena.khineika@mongodb.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/mongodb-js/mongodb-cloud-info/issues"
+  },
+  "homepage": "https://github.com/mongodb-js/mongodb-cloud-info#readme",
+  "dependencies": {
+    "gce-ips": "^1.0.2",
+    "lodash.get": "^4.4.2",
+    "netmask": "^1.0.6",
+    "node-fetch": "^2.6.0",
+    "save": "^2.4.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint-config-mongodb-js": "^5.0.3",
+    "mocha": "^7.1.2",
+    "mongodb-js-precommit": "^2.2.1"
+  }
+}

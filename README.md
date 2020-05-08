@@ -1,7 +1,7 @@
 # mongodb-cloud-info
 Get cloud information based on hostname
 
-## The return object format
+## The return object
 
 ```
 {

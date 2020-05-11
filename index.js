@@ -46,9 +46,9 @@ function rangeContainsIp(ipRanges, ip) {
 async function getCloudInfo(host) {
   if (!host) {
     return {
-      is_aws: false,
-      is_gcp: false,
-      is_azure: false
+      isAws: false,
+      isGcp: false,
+      isAzure: false
     };
   }
 
@@ -60,9 +60,9 @@ async function getCloudInfo(host) {
   ]));
 
   return {
-    is_aws: rangeContainsIp(awsIpRanges, ip),
-    is_gcp: rangeContainsIp(gcpIpRanges, ip),
-    is_azure: rangeContainsIp(azureIpRanges, ip)
+    isAws: rangeContainsIp(awsIpRanges, ip),
+    isGcp: rangeContainsIp(gcpIpRanges, ip),
+    isAzure: rangeContainsIp(azureIpRanges, ip)
   };
 }
 

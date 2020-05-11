@@ -6,9 +6,12 @@ Get cloud information based on hostname.
 Pass a service hostname to the `getCloudInfo()` function to get cloud information.
 
 ```
+import get from 'lodash.get';
+
 async function getCloudInfoFromDataService(dataService) {
   try {
-    const firstServerHostname = lodashGet(dataService, 'client.model.hosts.0.host');
+    const firstServerHostname = get(dataService, 'client.model.hosts.0.host');
+    
     return await getCloudInfo(firstServerHostname);
   } catch (e) {
     return {};

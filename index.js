@@ -2,7 +2,7 @@ const util = require('util');
 const dns = require('dns');
 const net = require('net');
 
-const fetch = require('node-fetch');
+const fetch = require('cross-fetch');
 const { Netmask } = require('netmask');
 const gceIps = require('gce-ips');
 

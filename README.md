@@ -7,6 +7,7 @@ Pass a service hostname to the `getCloudInfo()` function to get cloud informatio
 
 ```
 import get from 'lodash.get';
+import { getCloudInfo } from 'mongodb-cloud-info';
 
 async function getCloudInfoFromDataService(dataService) {
   try {

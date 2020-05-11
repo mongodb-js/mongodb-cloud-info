@@ -23,10 +23,10 @@
   },
   "homepage": "https://github.com/mongodb-js/mongodb-cloud-info#readme",
   "dependencies": {
+    "cross-fetch": "^3.0.4",
     "gce-ips": "^1.0.2",
     "lodash.get": "^4.4.2",
     "netmask": "^1.0.6",
-    "node-fetch": "^2.6.0",
     "save": "^2.4.0"
   },
   "devDependencies": {

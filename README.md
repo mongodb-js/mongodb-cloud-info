@@ -5,7 +5,7 @@ Get cloud information based on hostname.
 
 Pass a service hostname to the `getCloudInfo()` function to get cloud information.
 
-```
+```js
 import get from 'lodash.get';
 import { getCloudInfo } from 'mongodb-cloud-info';
 
@@ -22,7 +22,7 @@ async function getCloudInfoFromDataService(dataService) {
 
 ## The return object
 
-```
+```js
 {
   isAws: false,
   isGcp: false,

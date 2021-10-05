@@ -1,14 +1,14 @@
 const util = require('util');
 const dns = require('dns');
+const zlib = require('zlib');
 const net = require('net');
 
 const fetch = require('cross-fetch');
 const { Netmask } = require('netmask');
 const gceIps = require('gce-ips');
 
-const azureServiceTagsPublic = require('./ServiceTags_Public_20191202.json');
-
 const dnsLookup = util.promisify(dns.lookup.bind(dns));
+const gunzip = util.promisify(zlib.gunzip);
 
 function isIpv4Range(range) {
   return net.isIPv4(range.split('/')[0]);
@@ -31,7 +31,13 @@ async function getAwsIpRanges() {
     .filter(isIpv4Range);
 }
 
-function getAzureIpRanges() {
+let azureServiceTagsPublic;
+async function getAzureIpRanges() {
+  if (!azureServiceTagsPublic) {
+    const compressed = require('./ServiceTags_Public_20191202.compressed.js');
+    azureServiceTagsPublic = JSON.parse(await gunzip(Buffer.from(compressed, 'base64')));
+  }
+
   return azureServiceTagsPublic
     .values
     .map(value => value.properties.addressPrefixes)

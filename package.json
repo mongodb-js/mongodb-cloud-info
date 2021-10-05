@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "check": "mongodb-js-precommit",
-    "test": "mocha test/index.spec.js"
+    "test": "mocha test/index.spec.js",
+    "prepare": "node ./compress-json.js ServiceTags_Public_20191202.json ServiceTags_Public_20191202.compressed.js",
+    "prepack": "npm run prepare"
   },
   "repository": {
     "type": "git",

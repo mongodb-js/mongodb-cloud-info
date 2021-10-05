@@ -1,3 +1,5 @@
 test/
 .github/
 .eslintrc
+ServiceTags_Public_20191202.json
+compress-json.js

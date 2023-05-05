@@ -13,7 +13,6 @@ describe('getCloudInfo', () => {
     });
   });
 
-
   it('returns all false for localhost', async() => {
     const cloudInfo = await getCloudInfo('localhost');
     expect(cloudInfo).to.deep.equal({

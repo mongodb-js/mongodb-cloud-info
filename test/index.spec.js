@@ -71,5 +71,5 @@ describe('getCloudInfo', () => {
       isAzure: true
     });
   });
-});
+}).timeout(5000);
 

@@ -1,7 +1,6 @@
 const util = require('util');
 const dns = require('dns');
 const zlib = require('zlib');
-const net = require('net');
 const ipaddr = require('ipaddr.js');
 const fetch = require('cross-fetch');
 const gceIps = require('gce-ips');

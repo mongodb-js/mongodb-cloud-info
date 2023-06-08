@@ -36,8 +36,7 @@ describe('getCloudInfo', () => {
     });
   });
 
-  // TODO: https://jira.mongodb.org/browse/COMPASS-6795
-  it.skip('works with local ipv6 address (::1)', async() => {
+  it('works with local ipv6 address (::1)', async() => {
     const cloudInfo = await getCloudInfo('::1');
     expect(cloudInfo).to.deep.equal({
       isAws: false,

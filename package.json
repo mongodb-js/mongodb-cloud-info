@@ -30,7 +30,7 @@
   "dependencies": {
     "cross-fetch": "^3.0.4",
     "gce-ips": "^1.0.2",
-    "netmask": "^2.0.2"
+    "ipaddr.js": "^2.1.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",

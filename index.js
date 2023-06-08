@@ -2,24 +2,18 @@ const util = require('util');
 const dns = require('dns');
 const zlib = require('zlib');
 const net = require('net');
-
+const ipaddr = require('ipaddr.js');
 const fetch = require('cross-fetch');
-const { Netmask } = require('netmask');
 const gceIps = require('gce-ips');
 
 const dnsLookup = util.promisify(dns.lookup.bind(dns));
 const gunzip = util.promisify(zlib.gunzip);
 
-function isIpv4Range(range) {
-  return net.isIPv4(range.split('/')[0]);
-}
-
 async function getGCPIpRanges() {
   const gceIpsInstance = gceIps();
   const lookup = util.promisify(gceIpsInstance.lookup.bind(gceIpsInstance));
 
-  return (await lookup())
-    .filter(isIpv4Range);
+  return await lookup();
 }
 
 async function getAwsIpRanges() {
@@ -27,8 +21,7 @@ async function getAwsIpRanges() {
   const { prefixes } = await fetch(awsIpRangesUrl, { timeout: 3000 }).then(res => res.json());
 
   return prefixes
-    .map((range) => range.ip_prefix)
-    .filter(isIpv4Range);
+    .map((range) => range.ip_prefix);
 }
 
 let azureServiceTagsPublic;
@@ -41,12 +34,19 @@ async function getAzureIpRanges() {
   return azureServiceTagsPublic
     .values
     .map(value => value.properties.addressPrefixes)
-    .reduce((acc, val) => acc.concat(val), [])
-    .filter(isIpv4Range);
+    .reduce((acc, val) => acc.concat(val), []);
 }
 
 function rangeContainsIp(ipRanges, ip) {
-  return !!ipRanges.find((cidr) => new Netmask(cidr).contains(ip));
+  const address = ipaddr.parse(ip);
+  return !!ipRanges.find((ipRange) => {
+    const cidr = ipaddr.parseCIDR(ipRange);
+    if (address.kind() !== cidr[0].kind()) {
+      // cannot match ipv4 address with non-ipv4 one
+      return false;
+    }
+    return address.match(cidr);
+  });
 }
 
 async function getCloudInfo(host) {

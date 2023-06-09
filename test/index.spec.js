@@ -28,6 +28,7 @@ describe('getCloudInfo', () => {
   }
 
   it('works with local ip address (127.0.0.1)', async() => {
+    const start = Date.now();
     const cloudInfo = await getCloudInfo('127.0.0.1');
     expect(cloudInfo).to.deep.equal({
       isAws: false,

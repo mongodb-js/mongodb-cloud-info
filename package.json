@@ -9,7 +9,7 @@
     "check": "npm run depcheck && npm run lint",
     "test": "mocha test/*.spec.js",
     "release": "release-it",
-    "prepare": "node ./compress-json.js ServiceTags_Public_20191202.json ServiceTags_Public_20191202.compressed.js",
+    "prepare": "node scripts/prepare.js",
     "prepack": "npm run prepare"
   },
   "repository": {

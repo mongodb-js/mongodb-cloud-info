@@ -7,17 +7,6 @@ const CIDRS_URL = 'https://raw.githubusercontent.com/mongodb-js/mongodb-cloud-in
 
 const dnsLookup = util.promisify(dns.lookup.bind(dns));
 
-function parseAllIpRanges(ipRanges) {
-  const parsed = {};
-  for (const [name, { v4, v6 }] of Object.entries(ipRanges)) {
-    parsed[name] = {
-      v4: v4.map((cidr) => [new ipaddr.IPv4(cidr[0]), cidr[1]]),
-      v6: v6.map((cidr) => [new ipaddr.IPv6(cidr[0]), cidr[1]])
-    };
-  }
-  return parsed;
-}
-
 function rangesContainsIP(ipRanges, ip) {
   if (ip.kind() === 'ipv4') {
     return !!ipRanges.v4.find((cidr) => ip.match(cidr));
@@ -39,7 +28,13 @@ async function getCloudInfo(host) {
   const ip = ipaddr.parse(address);
 
   const unparsedCIDRs = await fetch(CIDRS_URL, { timeout: 5000 }).then(res => res.json());
-  const cidrs = parseAllIpRanges(unparsedCIDRs);
+  const cidrs = {};
+  for (const [name, { v4, v6 }] of Object.entries(unparsedCIDRs)) {
+    cidrs[name] = {
+      v4: v4.map((cidr) => [new ipaddr.IPv4(cidr[0]), cidr[1]]),
+      v6: v6.map((cidr) => [new ipaddr.IPv6(cidr[0]), cidr[1]])
+    };
+  }
 
   return {
     isAws: rangesContainsIP(cidrs.aws, ip),

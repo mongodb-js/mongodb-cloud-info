@@ -7,9 +7,10 @@
     "lint": "eslint .",
     "depcheck": "depcheck",
     "check": "npm run depcheck && npm run lint",
+    "pretest": "npm run prepare",
     "test": "mocha test/*.spec.js",
     "release": "release-it",
-    "prepare": "node ./compress-json.js ServiceTags_Public_20191202.json ServiceTags_Public_20191202.compressed.js",
+    "prepare": "node scripts/prepare.js",
     "prepack": "npm run prepare"
   },
   "repository": {
@@ -30,13 +31,14 @@
   "dependencies": {
     "cross-fetch": "^3.0.4",
     "gce-ips": "^1.0.2",
-    "netmask": "^2.0.2"
+    "ipaddr.js": "^2.1.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "depcheck": "^1.4.3",
     "eslint-config-mongodb-js": "^5.0.3",
     "mocha": "^10.2.0",
+    "nock": "^13.3.1",
     "release-it": "^15.10.3"
   }
 }

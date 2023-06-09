@@ -1,52 +1,18 @@
 const util = require('util');
 const dns = require('dns');
-const zlib = require('zlib');
-const net = require('net');
-
+const ipaddr = require('ipaddr.js');
 const fetch = require('cross-fetch');
-const { Netmask } = require('netmask');
-const gceIps = require('gce-ips');
+
+const CIDRS_URL = 'https://raw.githubusercontent.com/mongodb-js/mongodb-cloud-info/main/cidrs.json';
 
 const dnsLookup = util.promisify(dns.lookup.bind(dns));
-const gunzip = util.promisify(zlib.gunzip);
 
-function isIpv4Range(range) {
-  return net.isIPv4(range.split('/')[0]);
-}
-
-async function getGCPIpRanges() {
-  const gceIpsInstance = gceIps();
-  const lookup = util.promisify(gceIpsInstance.lookup.bind(gceIpsInstance));
-
-  return (await lookup())
-    .filter(isIpv4Range);
-}
-
-async function getAwsIpRanges() {
-  const awsIpRangesUrl = 'https://ip-ranges.amazonaws.com/ip-ranges.json';
-  const { prefixes } = await fetch(awsIpRangesUrl, { timeout: 3000 }).then(res => res.json());
-
-  return prefixes
-    .map((range) => range.ip_prefix)
-    .filter(isIpv4Range);
-}
-
-let azureServiceTagsPublic;
-async function getAzureIpRanges() {
-  if (!azureServiceTagsPublic) {
-    const compressed = require('./ServiceTags_Public_20191202.compressed.js');
-    azureServiceTagsPublic = JSON.parse(await gunzip(Buffer.from(compressed, 'base64')));
+function rangesContainsIP(ipRanges, ip) {
+  if (ip.kind() === 'ipv4') {
+    return !!ipRanges.v4.find((cidr) => ip.match(cidr));
   }
 
-  return azureServiceTagsPublic
-    .values
-    .map(value => value.properties.addressPrefixes)
-    .reduce((acc, val) => acc.concat(val), [])
-    .filter(isIpv4Range);
-}
-
-function rangeContainsIp(ipRanges, ip) {
-  return !!ipRanges.find((cidr) => new Netmask(cidr).contains(ip));
+  return !!ipRanges.v6.find((cidr) => ip.match(cidr));
 }
 
 async function getCloudInfo(host) {
@@ -58,17 +24,22 @@ async function getCloudInfo(host) {
     };
   }
 
-  const ip = await dnsLookup(host);
-  const [gcpIpRanges, awsIpRanges, azureIpRanges] = (await Promise.all([
-    getGCPIpRanges(),
-    getAwsIpRanges(),
-    getAzureIpRanges()
-  ]));
+  const address = await dnsLookup(host);
+  const ip = ipaddr.parse(address);
+
+  const unparsedCIDRs = await fetch(CIDRS_URL, { timeout: 5000 }).then(res => res.json());
+  const cidrs = {};
+  for (const [name, { v4, v6 }] of Object.entries(unparsedCIDRs)) {
+    cidrs[name] = {
+      v4: v4.map((cidr) => [new ipaddr.IPv4(cidr[0]), cidr[1]]),
+      v6: v6.map((cidr) => [new ipaddr.IPv6(cidr[0]), cidr[1]])
+    };
+  }
 
   return {
-    isAws: rangeContainsIp(awsIpRanges, ip),
-    isGcp: rangeContainsIp(gcpIpRanges, ip),
-    isAzure: rangeContainsIp(azureIpRanges, ip)
+    isAws: rangesContainsIP(cidrs.aws, ip),
+    isGcp: rangesContainsIP(cidrs.gcp, ip),
+    isAzure: rangesContainsIP(cidrs.azure, ip)
   };
 }
 

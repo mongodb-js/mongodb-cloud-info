@@ -1,9 +1,21 @@
 const getCloudInfo = require('../.').getCloudInfo;
 const chai = require('chai');
+const nock = require('nock');
+const path = require('path');
 
 const expect = chai.expect;
 
 describe('getCloudInfo', () => {
+  beforeEach(() => {
+    nock('https://raw.githubusercontent.com')
+      .get('/mongodb-js/mongodb-cloud-info/main/cidrs.json')
+      .replyWithFile(200, path.resolve(__dirname, '../', 'cidrs.json'));
+  });
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   it('returns all false for undefined', async() => {
     const cloudInfo = await getCloudInfo();
     expect(cloudInfo).to.deep.equal({
@@ -14,18 +26,14 @@ describe('getCloudInfo', () => {
   });
 
 
-  // TODO: https://jira.mongodb.org/browse/COMPASS-6795, works in our test
-  // environments with node 16, as localhost would resolve to an ipv4 address.
-  if (process.version.startsWith('v16')) {
-    it('returns all false for localhost', async() => {
-      const cloudInfo = await getCloudInfo('localhost');
-      expect(cloudInfo).to.deep.equal({
-        isAws: false,
-        isGcp: false,
-        isAzure: false
-      });
+  it('returns all false for localhost', async() => {
+    const cloudInfo = await getCloudInfo('localhost');
+    expect(cloudInfo).to.deep.equal({
+      isAws: false,
+      isGcp: false,
+      isAzure: false
     });
-  }
+  });
 
   it('works with local ip address (127.0.0.1)', async() => {
     const cloudInfo = await getCloudInfo('127.0.0.1');
@@ -36,8 +44,7 @@ describe('getCloudInfo', () => {
     });
   });
 
-  // TODO: https://jira.mongodb.org/browse/COMPASS-6795
-  it.skip('works with local ipv6 address (::1)', async() => {
+  it('works with local ipv6 address (::1)', async() => {
     const cloudInfo = await getCloudInfo('::1');
     expect(cloudInfo).to.deep.equal({
       isAws: false,
@@ -72,5 +79,5 @@ describe('getCloudInfo', () => {
       isAzure: true
     });
   });
-});
+}).timeout(5000);
 

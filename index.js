@@ -1,8 +1,9 @@
 const util = require('util');
 const dns = require('dns');
 const ipaddr = require('ipaddr.js');
+const fetch = require('cross-fetch');
 
-const unparsedCIDRs = require('./cidrs');
+const CIDRS_URL = 'https://raw.githubusercontent.com/mongodb-js/mongodb-cloud-info/main/cidrs.json';
 
 const dnsLookup = util.promisify(dns.lookup.bind(dns));
 
@@ -36,6 +37,8 @@ async function getCloudInfo(host) {
 
   const address = await dnsLookup(host);
   const ip = ipaddr.parse(address);
+
+  const unparsedCIDRs = await fetch(CIDRS_URL, { timeout: 5000 }).then(res => res.json());
   const cidrs = parseAllIpRanges(unparsedCIDRs);
 
   return {

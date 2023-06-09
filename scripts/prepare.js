@@ -91,8 +91,8 @@ async function writeAllIpRanges() {
     aws, azure, gcp
   };
 
-  const filename = path.resolve(__dirname, '../', 'cidrs.js');
-  await fs.promises.writeFile(filename, `module.exports = ${JSON.stringify(doc)};`, 'utf8');
+  const filename = path.resolve(__dirname, '../', 'cidrs.json');
+  await fs.promises.writeFile(filename, JSON.stringify(doc), 'utf8');
 }
 
 writeAllIpRanges()

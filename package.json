@@ -7,6 +7,7 @@
     "lint": "eslint .",
     "depcheck": "depcheck",
     "check": "npm run depcheck && npm run lint",
+    "pretest": "npm run prepare",
     "test": "mocha test/*.spec.js",
     "release": "release-it",
     "prepare": "node scripts/prepare.js",
@@ -37,6 +38,7 @@
     "depcheck": "^1.4.3",
     "eslint-config-mongodb-js": "^5.0.3",
     "mocha": "^10.2.0",
+    "nock": "^13.3.1",
     "release-it": "^15.10.3"
   }
 }

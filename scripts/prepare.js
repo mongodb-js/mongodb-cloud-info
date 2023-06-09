@@ -10,6 +10,8 @@ const AWS_IP_RANGES_URL = 'https://ip-ranges.amazonaws.com/ip-ranges.json';
 // unfortunately we have to update this URL regularly
 const AZURE_IP_RANGES_URL = 'https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20230605.json';
 
+const FETCH_TIMEOUT = 10000;
+
 
 function serializeV4CIDR(cidr) {
   // cidr is a two-element array. The first element is the address, the second
@@ -50,7 +52,7 @@ async function getSplitGCPIpRanges() {
 }
 
 async function getSplitAWSIpRanges() {
-  const result = await fetch(AWS_IP_RANGES_URL, { timeout: 3000 }).then(res => res.json());
+  const result = await fetch(AWS_IP_RANGES_URL, { timeout: FETCH_TIMEOUT }).then(res => res.json());
 
   return {
     v4: result.prefixes.map((range) => serializeV4CIDR(ipaddr.parseCIDR(range.ip_prefix))),
@@ -59,7 +61,7 @@ async function getSplitAWSIpRanges() {
 }
 
 async function getSplitAzureIpRanges() {
-  const { values } = await fetch(AZURE_IP_RANGES_URL, { timeout: 3000 }).then(res => res.json());
+  const { values } = await fetch(AZURE_IP_RANGES_URL, { timeout: FETCH_TIMEOUT }).then(res => res.json());
 
   const v4 = [];
   const v6 = [];

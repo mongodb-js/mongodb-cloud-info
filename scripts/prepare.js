@@ -7,8 +7,19 @@ const fetch = require('cross-fetch');
 const gceIps = require('gce-ips');
 
 const AWS_IP_RANGES_URL = 'https://ip-ranges.amazonaws.com/ip-ranges.json';
-// unfortunately we have to update this URL regularly
-const AZURE_IP_RANGES_URL = 'https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20230605.json';
+
+/*
+Unfortunately we have to update this URL regularly. It looks like there isn't a
+stable URL where you can just get the latest set of IPs. When this gets updated
+the URL stops working and then there is a new URL. The only known way to find
+that new URL is to google "azure ip addresses", click on the result "Azure IP
+Ranges and Service Tags – Public Cloud", then click Download, then find the url
+out of your downloads list, then replace it here.
+
+At least the Github Action that runs this script fails when that becomes
+necessary. So far it seems to happen roughly once a month.
+*/
+const AZURE_IP_RANGES_URL = 'https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20230703.json';
 
 const FETCH_TIMEOUT = 10000;
 

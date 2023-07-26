@@ -3,9 +3,12 @@ const dns = require('dns');
 const ipaddr = require('ipaddr.js');
 const fetch = require('cross-fetch');
 
-const CIDRS_URL = 'https://raw.githubusercontent.com/mongodb-js/mongodb-cloud-info/main/cidrs.json';
+const CIDRS_URL =
+  'https://raw.githubusercontent.com/mongodb-js/mongodb-cloud-info/main/cidrs.json';
 
 const dnsLookup = util.promisify(dns.lookup.bind(dns));
+
+let unparsedCIDRsPromise;
 
 function rangesContainsIP(ipRanges, ip) {
   if (ip.kind() === 'ipv4') {
@@ -27,7 +30,20 @@ async function getCloudInfo(host) {
   const address = await dnsLookup(host);
   const ip = ipaddr.parse(address);
 
-  const unparsedCIDRs = await fetch(CIDRS_URL, { timeout: 5000 }).then(res => res.json());
+  if (!unparsedCIDRsPromise) {
+    unparsedCIDRsPromise = fetch(CIDRS_URL, { timeout: 5000 }).then((res) => {
+      return res.json();
+    });
+  }
+  let unparsedCIDRs;
+  try {
+    unparsedCIDRs = await unparsedCIDRsPromise;
+  } catch (err) {
+    // If we failed to fetch, clean up the cached promise so that the next call
+    // can try again
+    unparsedCIDRsPromise = undefined;
+    throw err;
+  }
   const cidrs = {};
   for (const [name, { v4, v6 }] of Object.entries(unparsedCIDRs)) {
     cidrs[name] = {

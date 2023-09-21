@@ -18,7 +18,7 @@ Download, then find the url out of your downloads list, then replace it here.
 At least the Github Action that runs this script fails when that becomes
 necessary.
 */
-const AZURE_IP_RANGES_URL = 'https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20230724.json';
+const AZURE_IP_RANGES_URL = 'https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20230918.json';
 
 const FETCH_TIMEOUT = 10000;
 

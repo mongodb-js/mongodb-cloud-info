@@ -7,11 +7,9 @@
     "lint": "eslint .",
     "depcheck": "depcheck",
     "check": "npm run depcheck && npm run lint",
-    "pretest": "npm run prepare",
     "test": "mocha test/*.spec.js",
     "release": "release-it",
-    "prepare": "node scripts/prepare.js",
-    "prepack": "npm run prepare"
+    "update-cidrs": "node scripts/update-cidrs.js"
   },
   "repository": {
     "type": "git",

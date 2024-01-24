@@ -30,7 +30,7 @@ async function getSplitGCPIpRanges() {
   const gceIpsInstance = gceIps();
   const lookup = util.promisify(gceIpsInstance.lookup.bind(gceIpsInstance));
 
-  const prefixes = await lookup();
+  const prefixes = (await lookup()).sort();
 
   const v4 = [];
   const v6 = [];
@@ -70,7 +70,6 @@ async function findServiceTagsPublicJsonUrl() {
   }).first().attr('href');
 
   if (link) {
-    console.info('Found Service tags link:', link);
     return link;
   }
 

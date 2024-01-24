@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/mongodb-js/mongodb-cloud-info#readme",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
     "cross-fetch": "^3.1.6",
     "gce-ips": "^1.0.2",
     "ipaddr.js": "^2.1.0"

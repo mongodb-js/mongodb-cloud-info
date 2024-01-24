@@ -5,23 +5,12 @@ const fs = require('fs');
 const ipaddr = require('ipaddr.js');
 const fetch = require('cross-fetch');
 const gceIps = require('gce-ips');
+const cheerio = require('cheerio');
 
 const AWS_IP_RANGES_URL = 'https://ip-ranges.amazonaws.com/ip-ranges.json';
-
-/*
-Unfortunately we have to update this URL regularly. It looks like there isn't a
-stable URL where you can just get the latest set of IPs. When this gets updated
-the URL stops working and then there is a new URL. Browse to
-https://www.microsoft.com/en-us/download/details.aspx?id=56519, then click
-Download, then find the url out of your downloads list, then replace it here.
-
-At least the Github Action that runs this script fails when that becomes
-necessary.
-*/
-const AZURE_IP_RANGES_URL = 'https://download.microsoft.com/download/7/1/D/71D86715-5596-4529-9B13-DA13A5DE5B63/ServiceTags_Public_20230918.json';
+const SERVICE_TAG_LINK_HTML_PAGE_URL = 'https://www.microsoft.com/en-us/download/details.aspx?id=56519';
 
 const FETCH_TIMEOUT = 10000;
-
 
 function serializeV4CIDR(cidr) {
   // cidr is a two-element array. The first element is the address, the second
@@ -70,8 +59,28 @@ async function getSplitAWSIpRanges() {
   };
 }
 
+async function findServiceTagsPublicJsonUrl() {
+  const url = SERVICE_TAG_LINK_HTML_PAGE_URL;
+
+  const response = await fetch(url);
+  const body = await response.text();
+  const $ = cheerio.load(body);
+  const link = $('a').filter(function() {
+    return $(this).attr('href').match(/ServiceTags_Public_[\d]+\.json$/);
+  }).first().attr('href');
+
+  if (link) {
+    console.info('Found Service tags link:', link);
+    return link;
+  }
+
+  throw new Error('Service tags link not found');
+}
+
 async function getSplitAzureIpRanges() {
-  const { values } = await fetch(AZURE_IP_RANGES_URL, { timeout: FETCH_TIMEOUT }).then(res => res.json());
+  const azureIpRangesUrl = await findServiceTagsPublicJsonUrl();
+
+  const { values } = await fetch(azureIpRangesUrl, { timeout: FETCH_TIMEOUT }).then(res => res.json());
 
   const v4 = [];
   const v6 = [];

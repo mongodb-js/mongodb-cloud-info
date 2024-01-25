@@ -36,7 +36,7 @@ jobs:
           npm i
 
       - name: Update cidrs.json
-        run: npm run prepare
+        run: npm run update-cidrs
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
